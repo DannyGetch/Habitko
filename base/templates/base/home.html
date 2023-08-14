@@ -1,0 +1,370 @@
+{% extends 'main.html' %}
+
+{% block content %}
+    
+<div class="row">
+    <div class="col-12">
+        <div class="card bg-light ms-4 me-4 mb-4">
+            <div class="card-body">
+                <p class="card-text">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Habit Name</th>
+                                    <th scope="col">Periodicity</th>
+                                    <th scope="col">Duration</th>
+                                    <th scope="col">Streak</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+
+                            {% for habit in habits %}
+
+                            {% if habit.user == request.user %}
+                            <tbody>
+                                <tr>
+                                    <td>{{ habit.name }}</td>
+                                    <td>{{ habit.periodicity }}</td>
+                                    <td>{{ habit.duration }}</td>
+                                    <td>{{ habit.streak }} {{ habit.streak_type }}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-info me-1" href="{% url 'view_habit' habit.id %}" data-bs-toggle="modal" data-bs-target="#myModal{{habit.id}}" title="Info">
+                                            <i class="fa-solid fa-circle-info fa-lg"></i>
+                                        </button>  
+
+
+                                        <!-- Modal - View Habit -->
+
+                                        <div class="modal" id="myModal{{habit.id}}" tabindex="-1" aria-labelledby="myModalLabel1" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Habit: {{ habit.name }} {{ habit.periodicity }}</h5>                                              
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true"></span>
+                                                        </button>
+                                                    </div>
+
+                                                    <div class="modal-body">
+                                                        <ul class="list-unstyled">
+                                                            <li>Habit Name: <strong>{{ habit.name }}</strong></li>
+                                                            <li>Periodicity: <strong>{{ habit.periodicity }}</strong></li>
+                                                            <li>Duration: <strong>{{ habit.duration }}</strong></li>
+                                                            <li>Streak: <strong>{{ habit.streak }} {{ habit.streak_type }}</strong></li>
+                                                            <li>Created On: <strong>{{ habit.created_date }}</strong></li>
+                                                            <li>Last Completed On: <strong>{{ habit.last_completed_date }}</strong></li>
+                                                        </ul>
+                                                    </div>
+                                                    
+                                                    <div class="modal-footer">                                                          
+                                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div> 
+                                        
+
+                                        <!-- Edit Button -->
+
+                                        <a class="btn btn-warning me-1" href="{% url 'edit' habit.id %}" title="Edit">
+                                            <i class="fa-solid fa-pen-to-square fa-lg"></i>
+                                        </a>
+
+
+                                        <!-- Delete Button -->
+
+                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete{{habit.id}}" title="Delete">
+                                            <i class="fa-solid fa-trash-can fa-lg"></i>
+                                        </button>
+
+                                        <!-- Modal - Delete Habit -->
+                                        <div class="modal" id="delete{{habit.id}}" tabindex="-1" aria-labelledby="myModalLabel2" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">
+                                                            Habit: {{ habit.name }} {{ habit.periodicity }}
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true"></span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Are you sure you want to delete this habit?</p>
+                                                    </div>
+                                                    <div class="modal-footer">     
+                                                        <form action="{% url 'delete' habit.id %}" method="POST">
+                                                            {% csrf_token %}
+                                                            <input type="submit" class="btn btn-primary" value="Delete">
+                                                        </form>                                                    
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Check off button -->
+
+                                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#check_off{{habit.id}}" title="Check-off">
+                                            <i class="fa-solid fa-check fa-lg"></i>
+                                        </button>  
+
+                                        <!-- Modal - Check Off Habit -->
+                                        <div class="modal" id="check_off{{habit.id}}" tabindex="-1" aria-labelledby="myModalLabel3" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">
+                                                            Habit: {{ habit.name }} {{ habit.periodicity }}
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true"></span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Are you sure you want to mark this habit completed?</p>
+                                                    </div>
+                                                    <div class="modal-footer">     
+                                                        <form action="{% url 'check_off' habit.id %}" method="POST">
+                                                        {% csrf_token %}
+                                                            <input type="submit" class="btn btn-primary" value="Yes">
+                                                        </form>                                                    
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- View completed dates button -->
+
+                                        <button type="button" class="btn btn-info me-1" href="{% url 'view_completed_dates' habit.id %}" data-bs-toggle="modal" data-bs-target="#myModal2{{habit.id}}" title="Completed dates">
+                                            <i class="fa-solid fa-rectangle-list fa-lg"></i>
+                                        </button>   
+                                        
+                                        <!-- Modal - View Completed Dates -->
+                                        <div class="modal" id="myModal2{{habit.id}}" tabindex="-1" aria-labelledby="myModalLabel4" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">
+                                                            Habit: {{ habit.name }} {{ habit.periodicity }}
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true"></span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body"> 
+                                                        <strong>Completed Dates:</strong><br><br>                                    
+                                                    
+                                                        <table class="table table-striped">    
+                                                            {% for completed_date in completed_dates %}
+                                                                {% if habit.id == completed_date.name_id %}                                
+                                                                <tr>
+                                                                    <td>{{ completed_date }}</td>                                                                
+                                                                </tr>
+                                                                {% endif %}
+                                                            {% endfor %}                                                     
+                                                        </table>
+                                                    </div>                                    
+                                                    <div class="modal-footer">                                                          
+                                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- View inactivity dates button -->
+
+                                        <button type="button" class="btn btn-secondary me-1" href="{% url 'view_inactivity_dates' habit.id %}" data-bs-toggle="modal" data-bs-target="#myModal3{{habit.id}}" title="Inactivity dates">
+                                            <i class="fa-solid fa-face-sad-tear"></i>
+                                        </button>   
+                                        
+                                        <!-- Modal - View Inactivity Dates -->
+                                        <div class="modal" id="myModal3{{habit.id}}" tabindex="-1" aria-labelledby="myModalLabel5" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">
+                                                            Habit: {{ habit.name }} {{ habit.periodicity }}
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true"></span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body"> 
+                                                        <strong>Inactivity Dates:</strong><br><br>                                    
+                                                    
+                                                        <table class="table table-striped"> 
+                                                            <tr>
+                                                                <th>From</th>
+                                                                <th>To</th>
+                                                            </tr>  
+                                                            {% for inactivity_date in inactivity_dates %}  
+                                                                {% if habit.id == inactivity_date.name_id %}                                
+                                                                    <tr>
+                                                                        <td>{{ inactivity_date.first_inactive_date }}</td>
+                                                                        <td>{{ inactivity_date.last_inactive_date }}</td>                                                        
+                                                                    </tr>
+                                                                {% endif %}
+                                                            {% endfor %}     
+                                                        </table>                                                
+                                                                                                    
+                                                    </div>                                    
+                                                    <div class="modal-footer">                                                          
+                                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>    
+                                </tr>
+                            </tbody>
+
+                            {% endif %}
+
+                            {% endfor %}
+
+                        </table>
+                    </div>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <h4>Daily Habits</h4>
+        <div>
+            <canvas id="myChart"></canvas>
+        </div>
+          
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+          
+        <script>
+            const ctx = document.getElementById('myChart');
+          
+            new Chart(ctx, {
+              type: 'pie',
+              data: {
+                labels: [{% for habit in habits %} {% if habit.user == request.user %} {% if habit.periodicity == "Daily" %} '{{ habit.name }}', {% endif %} {% endif %} {% endfor %}],
+                datasets: [{
+                  label: 'Days',
+                  data: [{% for habit in habits %} {% if habit.user == request.user %} {% if habit.periodicity == "Daily" %} {{ habit.streak }}, {% endif %} {% endif %} {% endfor %}],
+                  borderWidth: 1
+                }]
+              },
+              options: {
+                scales: {
+                  y: {
+                    beginAtZero: true
+                  }
+                }
+              }
+            });
+        </script>
+    </div>
+    <div class="col-md-3">
+        <h4>Weekly Habits</h4>
+            <div>
+                <canvas id="myChart2"></canvas>
+            </div>
+              
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+              
+            <script>
+                const ctx2 = document.getElementById('myChart2');
+              
+                new Chart(ctx2, {
+                  type: 'pie',
+                  data: {
+                    labels: [{% for habit in habits %} {% if habit.user == request.user %} {% if habit.periodicity == "Weekly" %} '{{ habit.name }}', {% endif %} {% endif %} {% endfor %}],
+                    datasets: [{
+                      label: 'Weeks',
+                      data: [{% for habit in habits %} {% if habit.user == request.user %} {% if habit.periodicity == "Weekly" %} {{ habit.streak }}, {% endif %} {% endif %} {% endfor %}],
+                      borderWidth: 1
+                    }]
+                  },
+                  options: {
+                    scales: {
+                      y: {
+                        beginAtZero: true
+                      }
+                    }
+                  }
+                });
+            </script>
+        </div>
+        <div class="col-md-3">
+            <h4>Monthly Habits</h4>
+            <div>
+                <canvas id="myChart3"></canvas>
+            </div>
+              
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+              
+            <script>
+                const ctx3 = document.getElementById('myChart3');
+              
+                new Chart(ctx3, {
+                  type: 'pie',
+                  data: {
+                    labels: [{% for habit in habits %} {% if habit.user == request.user %} {% if habit.periodicity == "Monthly" %} '{{ habit.name }}', {% endif %} {% endif %} {% endfor %}],
+                    datasets: [{
+                      label: 'months',
+                      data: [{% for habit in habits %} {% if habit.user == request.user %} {% if habit.periodicity == "Monthly" %} {{ habit.streak }}, {% endif %} {% endif %} {% endfor %}],
+                      borderWidth: 1
+                    }]
+                  },
+                  options: {
+                    scales: {
+                      y: {
+                        beginAtZero: true
+                      }
+                    }
+                  }
+                });
+            </script>
+        </div>
+        <div class="col-md-3">
+            <h4>Yearly Habits</h4>
+            <div>
+                <canvas id="myChart4"></canvas>
+            </div>
+              
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+              
+            <script>
+                const ctx4 = document.getElementById('myChart4');
+              
+                new Chart(ctx4, {
+                  type: 'pie',
+                  data: {
+                    labels: [{% for habit in habits %} {% if habit.user == request.user %} {% if habit.periodicity == "Yearly" %} '{{ habit.name }}', {% endif %} {% endif %} {% endfor %}],
+                    datasets: [{
+                      label: 'years',
+                      data: [{% for habit in habits %} {% if habit.user == request.user %} {% if habit.periodicity == "Yearly" %} {{ habit.streak }}, {% endif %} {% endif %} {% endfor %}],
+                      borderWidth: 1
+                    }]
+                  },
+                  options: {
+                    scales: {
+                      y: {
+                        beginAtZero: true
+                      }
+                    }
+                  }
+                });
+              </script>
+        </div>
+    </div>
+
+    <footer class="mt-auto mb-4">
+        <div class="text-center">
+            <span>
+                Copyright &copy; <script>document.write(new Date().getFullYear())</script> Danny Getch
+            </span>
+        </div>
+    </footer>
+{% endblock %}
